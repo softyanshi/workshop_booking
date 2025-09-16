@@ -19,14 +19,14 @@
                         <!-- Workshop Name -->
                         <div class="mb-3">
                             <label class="form-label fw-bold">Workshop Name</label>
-                            {{ form.name|add_class:"form-control" }}
+                            {{ form.name }}
                             <div class="text-danger small">{{ form.name.errors }}</div>
                         </div>
 
                         <!-- Duration -->
                         <div class="mb-3">
                             <label class="form-label fw-bold">Duration (Days)</label>
-                            {{ form.duration|add_class:"form-control" }}
+                            {{ form.duration }}
                             <div class="form-text text-muted">{{ form.duration.help_text }}</div>
                             <div class="text-danger small">{{ form.duration.errors }}</div>
                         </div>
@@ -34,14 +34,14 @@
                         <!-- Description -->
                         <div class="mb-3">
                             <label class="form-label fw-bold">Description</label>
-                            {{ form.description|add_class:"form-control" }}
+                            {{ form.description }}
                             <div class="text-danger small">{{ form.description.errors }}</div>
                         </div>
 
                         <!-- Terms and Conditions -->
                         <div class="mb-3">
                             <label class="form-label fw-bold">Terms and Conditions</label>
-                            {{ form.terms_and_conditions|add_class:"form-control" }}
+                            {{ form.terms_and_conditions }}
                             <div class="text-danger small">{{ form.terms_and_conditions.errors }}</div>
                         </div>
 
