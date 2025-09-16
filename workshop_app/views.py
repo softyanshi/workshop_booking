@@ -269,8 +269,8 @@ def propose_workshop(request):
 
     user = request.user
 
-    # Instructors cannot propose workshops
-    if is_instructor(user):
+     # Instructors cannot propose workshops, but superuser can
+    if not user.is_superuser and is_instructor(user):
         return redirect(get_landing_page(user))
 
     form = WorkshopForm()

@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'statistics_app',
     'teams',
     'cms',
+    "widget_tweaks",
 ]
 
 MIDDLEWARE = [

@@ -84,6 +84,14 @@
                     <a class="nav-link {% if 'workshop_app:workshop_type_list' in request.resolver_match.view_name %}active fw-semibold{% endif %}"
                        href="{% url 'workshop_app:workshop_type_list' %}">Workshop Types</a>
                 </li>
+                
+                 {% if user.is_superuser or request.user|has_group:"instructor" %}
+                <li class="nav-item">
+                    <a class="nav-link {% if 'workshop_app:add_workshop_type' in request.resolver_match.view_name %}active fw-semibold{% endif %}"
+                       href="{% url 'workshop_app:add_workshop_type' %}">Add Workshop Type</a>
+                </li>
+                {% endif %}
+
             {% endif %}
         </ul>
 
