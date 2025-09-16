@@ -5,15 +5,68 @@
     z-index: 1000;
 }
 .footer {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    background-color: #61615F;
-    color: white;
+    background-color: #343a40; /* dark footer */
+    color: #bbb;
     text-align: center;
-    z-index: 100;
+    padding: 1rem 0;
+    margin-top: 2rem;
+    font-size: 0.9rem;
 }
+.footer a {
+    color: #ddd;
+    text-decoration: none;
+}
+.footer a:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+
+
+
 .base-content {
-    padding-top: 5em;
-    padding-bottom: 5em;
+    padding-top: 6rem; /* ensures navbar doesn't overlap */
+    padding-bottom: 4rem; /* footer space */
 }
+
+/* Beautiful gradient for headers */
+.bg-gradient-primary {
+    background: linear-gradient(45deg, #007bff, #00a8ff);
+}
+
+/* Card styling */
+.card {
+    border-radius: 1rem;
+    overflow: hidden;
+}
+.card-header {
+    border-bottom: none;
+}
+.input-group-text {
+    background-color: #f1f1f1;
+    border: none;
+}
+input.form-control {
+    border-left: none;
+}
+
+
+/* Highlight required fields */
+label.required::after {
+    content: " *";
+    color: red;
+    font-weight: bold;
+}
+
+/* Remove table borders for cleaner look */
+.table-borderless td,
+.table-borderless th {
+    border: none !important;
+    padding: 0.5rem 0;
+}
+
+/* Card consistency with login */
+.bg-gradient-primary {
+    background: linear-gradient(45deg, #28a745, #20c997);
+}
+
+
