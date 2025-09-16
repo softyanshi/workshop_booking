@@ -1,15 +1,43 @@
 {% extends 'workshop_app/base.html' %}
+{% load widget_tweaks %}
+
 
 {% block title %}
     Login
 {% endblock %}
 
+{% block extra-dependencies %}
+<style>
+    .login-card {
+        border-radius: 1rem;
+        overflow: hidden;
+    }
+    .login-header {
+        background: linear-gradient(135deg, #0d6efd, #6610f2);
+        color: #fff;
+    }
+    .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.2rem rgba(13,110,253,.25);
+    }
+    .btn-login {
+        background: linear-gradient(135deg, #0d6efd, #6610f2);
+        border: none;
+        transition: 0.3s;
+    }
+    .btn-login:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
     <div class="col-md-5">
-        <div class="card shadow-lg border-0 rounded-3">
-            <div class="card-header bg-gradient-primary text-white text-center py-3">
-                <h4 class="mb-0"><i class="fa fa-sign-in-alt"></i> Welcome Back</h4>
+        <div class="card shadow-lg border-0 login-card">
+            <div class="card-header login-header text-center py-4">
+                <h3 class="mb-0"><i class="fa fa-sign-in-alt me-2"></i>Welcome Back</h3>
                 <p class="small mb-0">Sign in to continue</p>
             </div>
             <div class="card-body p-4">
@@ -17,50 +45,48 @@
                     {% csrf_token %}
                     
                     {% if form.errors %}
-                        {% for field in form %}
-                            {% for error in field.errors %}
-                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                    <i class="fa fa-exclamation-circle"></i> {{ error|escape }}
-                                    <button type="button" class="close" data-dismiss="alert">&times;</button>
-                                </div>
-                            {% endfor %}
-                        {% endfor %}
-                        {% for error in form.non_field_errors %}
-                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                <i class="fa fa-exclamation-circle"></i> {{ error|escape }}
-                                <button type="button" class="close" data-dismiss="alert">&times;</button>
-                            </div>
-                        {% endfor %}
+                        <div class="alert alert-danger" role="alert">
+                            <ul class="mb-0">
+                                {% for field in form %}
+                                    {% for error in field.errors %}
+                                        <li><i class="fa fa-exclamation-circle me-1"></i>{{ error|escape }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+                                {% for error in form.non_field_errors %}
+                                    <li><i class="fa fa-exclamation-circle me-1"></i>{{ error|escape }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
                     {% endif %}
                     
-                    <div class="form-group mb-3">
-                        <label for="id_username">Username</label>
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">Username</label>
                         <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><i class="fa fa-user"></i></span>
-                            </div>
-                            {{ form.username }}
+                            <span class="input-group-text bg-light"><i class="fa fa-user"></i></span>
+                            {{ form.username|add_class:"form-control" }}
                         </div>
                     </div>
                     
-                    <div class="form-group mb-4">
-                        <label for="id_password">Password</label>
+                    <div class="mb-4">
+                        <label for="id_password" class="form-label">Password</label>
                         <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><i class="fa fa-lock"></i></span>
-                            </div>
-                            {{ form.password }}
+                            <span class="input-group-text bg-light"><i class="fa fa-lock"></i></span>
+                            {{ form.password|add_class:"form-control" }}
                         </div>
                     </div>
                     
-                    <button type="submit" class="btn btn-primary btn-block shadow-sm">
-                        <i class="fa fa-sign-in-alt"></i> Sign In
+                    <button type="submit" class="btn btn-login w-100 text-white shadow-sm py-2">
+                        <i class="fa fa-sign-in-alt me-2"></i> Sign In
                     </button>
                 </form>
                 <hr>
                 <div class="text-center">
-                    <a href="{% url 'workshop_app:register' %}" class="text-primary">New around here? <strong>Sign up</strong></a><br>
-                    <a href="{% url 'password_reset' %}" class="text-secondary">Forgot password?</a>
+                    <a href="{% url 'workshop_app:register' %}" class="text-decoration-none">
+                        New here? <strong>Create an account</strong>
+                    </a><br>
+                    <a href="{% url 'password_reset' %}" class="text-secondary text-decoration-none">
+                        Forgot password?
+                    </a>
                 </div>
             </div>
         </div>

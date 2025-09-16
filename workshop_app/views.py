@@ -36,6 +36,12 @@ __credits__ = ["Mahesh Gudi", "Aditya P.", "Ankit Javalkar",
                "Arun KP"]
 
 
+def home(request):
+    """Landing/Home page"""
+    return render(request, "workshop_app/home.html")
+
+
+
 # Helper functions
 
 def is_email_checked(user):

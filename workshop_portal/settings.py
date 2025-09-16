@@ -165,7 +165,12 @@ SHOW_WORKSHOP_STATS = True
 # Create a CMS page as a home page and give the page title here
 HOME_PAGE_TITLE = "home-page-title"
 
-LOGIN_REDIRECT_URL = '/workshop/login'
+
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_COOKIE_AGE = 3600
+# Authentication Settings
+LOGIN_URL = '/workshop/login/'               # where login view lives
+LOGIN_REDIRECT_URL = '/'                     # where to go after login (home)
+LOGOUT_REDIRECT_URL = '/'                    # after logout
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

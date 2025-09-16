@@ -4,7 +4,8 @@ from workshop_app import views
 app_name = "workshop_app"
 
 urlpatterns = [
-    path('', views.index, name='index'),
+    path('', views.home, name='home'),    
+     path('index/', views.index, name='index'), 
     path('register/', views.user_register, name="register"),
     path('activate_user/', views.activate_user),
     re_path(r'^activate_user/(?P<key>.+)$', views.activate_user),

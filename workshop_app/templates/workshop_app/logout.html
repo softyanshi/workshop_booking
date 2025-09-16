@@ -1,18 +1,48 @@
 {% extends 'workshop_app/base.html' %}
 
-	{% block title %}
-		Logged out
-	{% endblock %}
+{% block title %}
+    Logged Out
+{% endblock %}
 
+{% block extra-dependencies %}
+<style>
+    .logout-card {
+        border-radius: 1rem;
+        padding: 2rem;
+        background: #fff;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+        text-align: center;
+        max-width: 500px;
+        margin: auto;
+    }
+    .logout-icon {
+        font-size: 3rem;
+        color: #dc3545; /* Bootstrap danger red */
+        margin-bottom: 1rem;
+    }
+    .btn-login-again {
+        background: linear-gradient(135deg, #0d6efd, #6610f2);
+        border: none;
+        transition: 0.3s;
+    }
+    .btn-login-again:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %}
 
-	{% block content %}
-		<div class="container" align="center">
-			<br>
-			<h3>You have logged out successfully.</h3>
-			<h4>If you want to login again please
-				<a href="/">click here</a>
-			</h4>
-			<br>
-		</div>
-
-	{% endblock %}
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="logout-card">
+        <div class="logout-icon">
+            <i class="fa fa-sign-out-alt"></i>
+        </div>
+        <h3 class="mb-3">You have logged out successfully.</h3>
+        <p class="text-muted mb-4">We hope to see you again soon!</p>
+        <a href="{% url 'login' %}" class="btn btn-login-again text-white px-4 py-2 shadow-sm">
+            <i class="fa fa-sign-in-alt me-2"></i> Login Again
+        </a>
+    </div>
+</div>
+{% endblock %}
