@@ -1,0 +1,99 @@
+{% extends "workshop_app/base.html" %}
+{% load custom_filters %}
+
+{% block title %}
+    Home
+{% endblock %}
+
+{% block extra-dependencies %}
+<style>
+    .hero {
+        padding: 4rem 2rem;
+        background: linear-gradient(135deg, #e3f2fd, #f1f8e9);
+        border-radius: .75rem;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .hero h1 {
+        font-weight: 700;
+        color: #0d6efd;
+    }
+    .card {
+        transition: transform 0.2s ease-in-out;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Hero Section -->
+    <div class="hero mb-5">
+        <h1>Welcome to FOSSEE Workshops 🎉</h1>
+        <p class="lead mt-3">
+            A platform to manage, track, and organize workshops efficiently.
+        </p>
+    </div>
+
+    {% if user.is_authenticated %}
+        <div class="row justify-content-center mt-5">
+            <!-- Your Workshops -->
+            <div class="col-md-3 mb-3">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Your Workshops</h5>
+                        <p class="card-text">Track the status of workshops you're part of.</p>
+                        {% if user.is_superuser or user|has_group:"instructor" %}
+                            <a href="{% url 'workshop_app:workshop_status_instructor' %}" class="btn btn-primary">View Workshops</a>
+                        {% else %}
+                            <a href="{% url 'workshop_app:workshop_status_coordinator' %}" class="btn btn-primary">View Workshops</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Propose Workshop (only for coordinators) -->
+            {% if not user|has_group:"instructor" %}
+            <div class="col-md-3 mb-3">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Propose Workshop</h5>
+                        <p class="card-text">Submit a new workshop request to instructors.</p>
+                        <a href="{% url 'workshop_app:propose_workshop' %}" class="btn btn-warning">Propose</a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Workshop Types -->
+            <div class="col-md-3 mb-3">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Workshop Types</h5>
+                        <p class="card-text">Explore the available types of workshops.</p>
+                        <a href="{% url 'workshop_app:workshop_type_list' %}" class="btn btn-info text-white">Browse</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile -->
+            <div class="col-md-3 mb-3">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Your Profile</h5>
+                        <p class="card-text">View or update your personal information.</p>
+                        <a href="{% url 'workshop_app:view_own_profile' %}" class="btn btn-secondary">Profile</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <!-- Not logged in -->
+        <div class="text-center mt-5">
+            <p class="lead">Please <a href="{% url 'workshop_app:login' %}">Login</a> or <a href="{% url 'workshop_app:register' %}">Register</a> to continue.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
