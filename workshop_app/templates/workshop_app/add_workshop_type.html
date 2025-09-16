@@ -1,50 +1,58 @@
 {% extends 'workshop_app/base.html' %}
 
 {% block title %}
-    Add new Workshop type
+    Add New Workshop Type
 {% endblock %}
 
 {% block content %}
-    <div class="container">
-        <h2 class="text-center m-2">New Workshop Type</h2>
-        <br>
-        <form method="post">
-            <div class="row my-3">
-                <div class="col-3 font-weight-bold">Workshop Name :</div>
-                <div class="col text-left">
-                    <div class="row"><div class="col">{{ form.name }}</div></div>
-                    <div class="row m-1 text-danger"><div class="col">{{ form.name.errors }}</div></div>
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-primary text-white text-center rounded-top-4">
+                    <h3 class="mb-0">Add New Workshop Type</h3>
                 </div>
+                <div class="card-body p-4">
+                    <form method="post">
+                        {% csrf_token %}
 
-            </div>
-            <div class="row my-3">
-                <div class="col-3 font-weight-bold">Duration :</div>
-                <div class="col text-left">
-                    <div class="row"><div class="col">{{ form.duration }}</div></div>
-                    <div class="row m-1 text-muted"><div class="col">{{ form.duration.help_text }}</div></div>
-                    <div class="row m-1 text-danger"><div class="col">{{ form.duration.errors }}</div></div>
-                </div>
-            </div>
-            <div class="row my-3">
-                <div class="col-3 font-weight-bold">Description :</div>
-                <div class="col text-left">
-                    <div class="row"><div class="col">{{ form.description }}</div></div>
-                    <div class="row m-1 text-danger"><div class="col">{{ form.description.errors }}</div></div>
-                </div>
-            </div>
-            <div class="row my-3">
-                <div class="col-3 font-weight-bold">Terms and Conditions :</div>
-                <div class="col text-left">
-                    <div class="row"><div class="col">{{ form.terms_and_conditions }}</div></div>
-                    <div class="row m-1 text-danger"><div class="col">{{ form.terms_and_conditions.errors }}</div></div>
-                </div>
-            </div>
+                        <!-- Workshop Name -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Workshop Name</label>
+                            {{ form.name|add_class:"form-control" }}
+                            <div class="text-danger small">{{ form.name.errors }}</div>
+                        </div>
 
-            <div class="row my-3">
-                <div class="col-12">
-                    <button type="submit" class="btn btn-md btn-primary float-right m-3">Create</button>
+                        <!-- Duration -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Duration (Days)</label>
+                            {{ form.duration|add_class:"form-control" }}
+                            <div class="form-text text-muted">{{ form.duration.help_text }}</div>
+                            <div class="text-danger small">{{ form.duration.errors }}</div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Description</label>
+                            {{ form.description|add_class:"form-control" }}
+                            <div class="text-danger small">{{ form.description.errors }}</div>
+                        </div>
+
+                        <!-- Terms and Conditions -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Terms and Conditions</label>
+                            {{ form.terms_and_conditions|add_class:"form-control" }}
+                            <div class="text-danger small">{{ form.terms_and_conditions.errors }}</div>
+                        </div>
+
+                        <!-- Submit -->
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-success px-4">Create</button>
+                        </div>
+                    </form>
                 </div>
             </div>
-        </form>
+        </div>
     </div>
+</div>
 {% endblock %}

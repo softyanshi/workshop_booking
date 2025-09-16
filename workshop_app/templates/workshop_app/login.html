@@ -5,49 +5,65 @@
 {% endblock %}
 
 {% block content %}
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-6 col-md-offset-6">
-                <div class="card">
-                    <div class="card-body">
-                        <form class="px-3 py-3" method="post">
-                        {% csrf_token %}
-                        {% if form.errors %}
-                            {% for field in form %}
-                                {% for error in field.errors %}
-                                    <div class="alert alert-dismissible alert-danger">
-                                        <button type="button" class="close" data-dismiss="alert">
-                                            <i class="fa fa-close"></i>
-                                        </button>
-                                        <strong>{{ error|escape }}</strong>
-                                    </div>
-                                {% endfor %}
-                            {% endfor %}
-                            {% for error in form.non_field_errors %}
-                                <div class="alert alert-dismissible alert-danger">
-                                    <button type="button" class="close" data-dismiss="alert">
-                                        <i class="fa fa-close"></i>
-                                    </button>
-                                    <strong>{{ error|escape }}</strong>
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="col-md-5">
+        <div class="card shadow-lg border-0 rounded-3">
+            <div class="card-header bg-gradient-primary text-white text-center py-3">
+                <h4 class="mb-0"><i class="fa fa-sign-in-alt"></i> Welcome Back</h4>
+                <p class="small mb-0">Sign in to continue</p>
+            </div>
+            <div class="card-body p-4">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    {% if form.errors %}
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <i class="fa fa-exclamation-circle"></i> {{ error|escape }}
+                                    <button type="button" class="close" data-dismiss="alert">&times;</button>
                                 </div>
                             {% endfor %}
-                        {% endif %}
-                        <div class="form-group">
-                          <label for="id_username">Username</label>
-                          {{ form.username }}
+                        {% endfor %}
+                        {% for error in form.non_field_errors %}
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="fa fa-exclamation-circle"></i> {{ error|escape }}
+                                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <div class="form-group mb-3">
+                        <label for="id_username">Username</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fa fa-user"></i></span>
+                            </div>
+                            {{ form.username }}
                         </div>
-                        <div class="form-group">
-                          <label for="id_password">Password</label>
-                          {{ form.password }}
-                        </div>
-                        <button type="submit" class="btn btn-primary">Sign in</button>
-                        </form>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="{% url 'workshop_app:register' %}">New around here? Sign up</a>
-                        <a class="dropdown-item" href="{% url 'password_reset' %}">Forgot password?</a>
                     </div>
-                </div>  
+                    
+                    <div class="form-group mb-4">
+                        <label for="id_password">Password</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fa fa-lock"></i></span>
+                            </div>
+                            {{ form.password }}
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-block shadow-sm">
+                        <i class="fa fa-sign-in-alt"></i> Sign In
+                    </button>
+                </form>
+                <hr>
+                <div class="text-center">
+                    <a href="{% url 'workshop_app:register' %}" class="text-primary">New around here? <strong>Sign up</strong></a><br>
+                    <a href="{% url 'password_reset' %}" class="text-secondary">Forgot password?</a>
+                </div>
             </div>
         </div>
     </div>
+</div>
 {% endblock %}

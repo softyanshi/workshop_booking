@@ -43,27 +43,27 @@ def is_email_checked(user):
 
 
 def is_instructor(user):
-    """Check if the user is having instructor rights"""
-    return user.groups.filter(name='instructor').exists()
+    """Check if the user has instructor rights or is superuser"""
+    return user.is_superuser or user.groups.filter(name='instructor').exists()
+
 
 
 def get_landing_page(user):
-    # For now, landing pages of both instructor and coordinator are same
-    if is_instructor(user):
+    # Superuser goes to instructor dashboard
+    if user.is_superuser or is_instructor(user):
         return reverse('workshop_app:workshop_status_instructor')
     return reverse('workshop_app:workshop_status_coordinator')
+
 
 
 # View functions
 
 def index(request):
-    """Landing Page : Redirect to login page if not logged in
-                      Redirect to respective landing page according to position"""
     user = request.user
-    if user.is_authenticated and is_email_checked(user):
+    if user.is_authenticated and (user.is_superuser or is_email_checked(user)):
         return redirect(get_landing_page(user))
-
     return redirect(reverse('workshop_app:login'))
+
 
 
 # User views
@@ -72,16 +72,15 @@ def index(request):
 def user_login(request):
     """User Login"""
     user = request.user
-    if user.is_superuser:
-        return redirect('/admin')
     if user.is_authenticated:
+        # Superuser should also land in app, not just admin
         return redirect(get_landing_page(user))
 
     if request.method == "POST":
         form = UserLoginForm(request.POST)
         if form.is_valid():
             user = form.cleaned_data
-            if user.profile.is_email_verified:
+            if user.profile.is_email_verified or user.is_superuser:
                 login(request, user)
                 return redirect(get_landing_page(user))
             else:
@@ -102,7 +101,7 @@ def user_logout(request):
 def activate_user(request, key=None):
     user = request.user
     if user.is_superuser:
-        return redirect("/admin")
+          return redirect(get_landing_page(user))
     if key is None:
         if user.is_authenticated and not user.profile.is_email_verified and \
                 timezone.now() > user.profile.key_expiry_time:
@@ -266,55 +265,68 @@ def change_workshop_date(request, workshop_id):
 
 @login_required
 def propose_workshop(request):
-    """Coordinator proposed a workshop and date"""
+    """Coordinator (and superuser) can propose a workshop and date"""
 
     user = request.user
-    if user.is_superuser:
-        return redirect("/admin")
+
+    # Instructors cannot propose workshops
     if is_instructor(user):
         return redirect(get_landing_page(user))
-    else:
-        form = WorkshopForm()
-        if request.method == 'POST':
-            form = WorkshopForm(request.POST)
-            if form.is_valid():
-                form_data = form.save(commit=False)
-                form_data.coordinator = user
-                # Avoiding Duplicate workshop entries for same date and workshop_title
-                if Workshop.objects.filter(
-                        date=form_data.date,
-                        workshop_type=form_data.workshop_type,
-                        coordinator=form_data.coordinator
-                ).exists():
-                    return redirect(get_landing_page(user))
-                else:
-                    form_data.save()
-                    instructors = Profile.objects.filter(position='instructor')
-                    for i in instructors:
-                        send_email(request, call_on='Proposed Workshop',
-                                   user_position='instructor',
-                                   workshop_date=str(form_data.date),
-                                   workshop_title=form_data.workshop_type,
-                                   user_name=user.get_full_name(),
-                                   other_email=i.user.email,
-                                   phone_number=user.profile.phone_number,
-                                   institute=user.profile.institute
-                                   )
-                    messages.add_message(request, messages.SUCCESS, "Workshop proposed successfully")
-                    return redirect(get_landing_page(user))
-        # GET request
-        return render(
-            request, 'workshop_app/propose_workshop.html',
-            {"form": form}
-        )
+
+    form = WorkshopForm()
+
+    if request.method == 'POST':
+        form = WorkshopForm(request.POST)
+        if form.is_valid():
+            form_data = form.save(commit=False)
+            form_data.coordinator = user
+
+            # Avoid duplicate workshop entries for same date and title
+            if Workshop.objects.filter(
+                date=form_data.date,
+                workshop_type=form_data.workshop_type,
+                coordinator=form_data.coordinator
+            ).exists():
+                return redirect(get_landing_page(user))
+
+            form_data.save()
+
+            # Notify instructors
+            instructors = Profile.objects.filter(position='instructor')
+            for i in instructors:
+                send_email(
+                    request,
+                    call_on='Proposed Workshop',
+                    user_position='instructor',
+                    workshop_date=str(form_data.date),
+                    workshop_title=form_data.workshop_type,
+                    user_name=user.get_full_name(),
+                    other_email=i.user.email,
+                    phone_number=user.profile.phone_number,
+                    institute=user.profile.institute
+                )
+
+            messages.add_message(request, messages.SUCCESS, "Workshop proposed successfully")
+            return redirect(get_landing_page(user))
+
+    # GET request
+    return render(request, 'workshop_app/propose_workshop.html', {"form": form})
+
 
 
 @login_required
 def workshop_type_details(request, workshop_type_id):
     """Gives the types of workshop details """
     user = request.user
+     # allow superuser to view/edit
     if user.is_superuser:
-        return redirect("/admin")
+        workshop_type = WorkshopType.objects.filter(id=workshop_type_id).first()
+        if not workshop_type:
+            return redirect(reverse('workshop_app:workshop_type_list'))
+        return render(
+            request, 'workshop_app/workshop_type_details.html',
+            {'workshop_type': workshop_type}
+        )
 
     workshop_type = WorkshopType.objects.filter(id=workshop_type_id)
     if workshop_type.exists():
@@ -398,18 +410,18 @@ def workshop_type_tnc(request, workshop_type_id):
 
 
 def workshop_type_list(request):
-    """Gives the details for types of workshops."""
     user = request.user
-    if user.is_superuser:
-        return redirect("/admin")
+    # if user.is_superuser:
+    #     return redirect("/admin")   
 
     workshop_types = WorkshopType.objects.get_queryset().order_by("id")
 
-    paginator = Paginator(workshop_types, 12)  # Show upto 12 workshops per page
+    paginator = Paginator(workshop_types, 12)  # Show up to 12 workshops per page
     page = request.GET.get('page')
     workshop_type = paginator.get_page(page)
 
     return render(request, 'workshop_app/workshop_type_list.html', {'workshop_type': workshop_type})
+
 
 
 @login_required
@@ -442,20 +454,25 @@ def workshop_details(request, workshop_id):
 
 @login_required
 def add_workshop_type(request):
-    if not is_instructor(request.user):
-        return redirect(get_landing_page(request.user))
+    """Instructor (and superuser) can add a new workshop type"""
+
+    user = request.user
+
+    # Coordinators should not access this
+    if not is_instructor(user) and not user.is_superuser:
+        return redirect(get_landing_page(user))
+
     if request.method == 'POST':
         form = WorkshopTypeForm(request.POST)
         if form.is_valid():
             form_data = form.save()
             messages.add_message(request, messages.SUCCESS, "Workshop Type added")
-            return redirect(
-                reverse('workshop_app:workshop_type_details',
-                        args=[form_data.id])
-            )
+            return redirect(reverse('workshop_app:workshop_type_details', args=[form_data.id]))
     else:
-        form = WorkshopTypeForm
+        form = WorkshopTypeForm()
+
     return render(request, 'workshop_app/add_workshop_type.html', {'form': form})
+
 
 
 @login_required
@@ -478,7 +495,10 @@ def view_own_profile(request):
     """User can view own profile """
     user = request.user
     if user.is_superuser:
-        return redirect("admin")
+        profile = user.profile
+    return render(request, "workshop_app/view_profile.html",
+                  {"profile": profile, "Workshops": None, "form": None})
+
     profile = user.profile
     if request.method == 'POST':
         form = ProfileForm(request.POST, user=user, instance=profile)

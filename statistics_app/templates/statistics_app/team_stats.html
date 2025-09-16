@@ -1,48 +1,90 @@
 {% extends 'workshop_app/base.html' %}
 
 {% block title %}
- Workshop  Statistics
+  Team Workshop Statistics
 {% endblock %}
 
 {% block content %}
-
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-2">
-            <ul class="nav nav-pills list-group">
-                {% for team in all_teams %}
-                    <li class="nav-item">
-                        <a href="{% url 'statistics_app:team' team.id %}" class="nav-link list-group-item">
-                            Team {{forloop.counter}}
-                        </a>
-                    </li>
-                {% endfor %}
-            </ul>
+<div class="container-fluid py-4">
+  <div class="row">
+    
+    <!-- Sidebar -->
+    <div class="col-md-3 col-lg-2 mb-4">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          Teams
         </div>
-        <div class="col-md-8">
-            <br>
-            <canvas id="myChart"></canvas>
-        </div>
+        <ul class="list-group list-group-flush">
+          {% for team in all_teams %}
+          <li class="list-group-item">
+            <a href="{% url 'statistics_app:team' team.id %}" 
+               class="text-decoration-none {% if team.id == current_team_id %}fw-bold text-primary{% else %}text-dark{% endif %}">
+              <i class="bi bi-people"></i> Team {{ forloop.counter }}
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
     </div>
-</div>
-<script>
-    var ctx = document.getElementById('myChart').getContext('2d');
-    var chart = new Chart(ctx, {
-        // The type of chart we want to create
-        type: 'bar',
 
-        // The data for our dataset
-        data: {
-            labels: {{team_labels|safe}},
-            datasets: [{
-                data: {{ws_count|safe}},
-                label: "Team Members Workshops",
-                backgroundColor: 'rgb(255, 99, 132)',
-                borderColor: 'rgb(255, 99, 132)',
-            }]
+    <!-- Main Chart Section -->
+    <div class="col-md-9 col-lg-10">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          Team Members Workshops
+        </div>
+        <div class="card-body">
+          <canvas id="myChart" height="120"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Chart.js -->
+<script>
+  var ctx = document.getElementById('myChart').getContext('2d');
+  var chart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: {{ team_labels|safe }},
+      datasets: [{
+        data: {{ ws_count|safe }},
+        label: "Workshops Conducted",
+        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+        borderColor: 'rgba(54, 162, 235, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: {
+          display: true,
+          text: 'Workshops Conducted per Team Member',
+          font: { size: 18 }
         },
-        // Configuration options go here
-        options: {}
-    });
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              return context.parsed.y + " workshops";
+            }
+          }
+        },
+        legend: {
+          display: false
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            stepSize: 1
+          }
+        }
+      }
+    }
+  });
 </script>
 {% endblock %}
+

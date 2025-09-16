@@ -1,35 +1,42 @@
 {% extends 'workshop_app/base.html' %}
 
-	{% block title %}
-		Register
-	{% endblock %}
+{% block title %}
+    Register
+{% endblock %}
 
 {% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 85vh;">
+    <div class="col-md-7">
+        <div class="card shadow-lg border-0 rounded-3">
+            <div class="card-header bg-gradient-primary text-white text-center py-3">
+                <h4 class="mb-0"><i class="fa fa-user-plus"></i> Coordinator Registration</h4>
+                <p class="small mb-0">Fill in the details below to create an account</p>
+            </div>
+            <div class="card-body p-4">
+                <form method="post">
+                    {% csrf_token %}
 
-	<style type="text/css">
-    	label.required::after {
-    	content: "*";
-    	color: red;
-		}
+                    {% if form.errors %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fa fa-exclamation-circle"></i> Please fix the errors below.
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        </div>
+                    {% endif %}
 
-		.errorlist {
-      color: red;
-    }
-	</style>
+                    <table class="table table-borderless">
+                        {{ form.as_table }}
+                    </table>
 
-	<div class="container" >
-		<br>
-		<h3>Coordinator Registration Form</h3>
-		<br>
-		<form action="" method="post">
-			{% csrf_token %}
-				<table class="table table-bordered">
-					{{ form.as_table }}
-				</table>
-
-				<button class="btn btn-primary" type="submit">Register</button>
-		</form><br>
-		<!-- Activate when Instructor registeration starts -->
-		<br>
-	</div>
+                    <button type="submit" class="btn btn-success btn-block shadow-sm mt-3">
+                        <i class="fa fa-check-circle"></i> Register
+                    </button>
+                </form>
+            </div>
+            <div class="card-footer text-center bg-light">
+                <p class="mb-1">Already have an account?</p>
+                <a href="{% url 'login' %}" class="text-primary"><i class="fa fa-sign-in-alt"></i> Login here</a>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
